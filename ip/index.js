@@ -1,26 +1,26 @@
 //axios import buraya gelecek
 
-var benimIP;
+import axios from "axios";
 
+var benimIP;
 
 // ------------ değiştirmeyin --------------
 // licensed to Ergineer 2022
 require("babel-core/register");
 require("babel-polyfill");
-async function ipAdresimiAl(){
-	await axios({
-		method: 'get',
-		url: 'https://apis.ergineer.com/ipadresim',
-	})
-	.then(function (response) {
-		return response.data
-	})
-	.then(function (a) {
-		benimIP=a
-	});
-}				
+async function ipAdresimiAl() {
+  await axios({
+    method: "get",
+    url: "https://apis.ergineer.com/ipadresim",
+  })
+    .then(function (response) {
+      return response.data;
+    })
+    .then(function (a) {
+      benimIP = a;
+    });
+}
 // ------------ değiştirmeyin --------------
-
 
 /*
 	ADIM 1: axios kullanarak, aşağıdaki URL'ye GET sorgusu atacağız
@@ -67,6 +67,97 @@ async function ipAdresimiAl(){
 	Örnek dinamik URL kullanımı: var url = "https://apis.ergineer.com/ipgeoapi/"+benimIP; 
 */
 
-
-
 //kodlar buraya gelecek
+
+const cardCreator = (data) => {
+  const card = document.createElement("div");
+  card.classList.add("card");
+  document.body.append(card);
+
+  const bayrak = document.createElement("img");
+  bayrak.src = `https://flagcdn.com/w320/${data["ülkeKodu"].toLowerCase()}.png`;
+  card.append(bayrak);
+
+  const cardInfo = document.createElement("div");
+  cardInfo.classList.add("card-info");
+
+  const ipAdres = document.createElement("h3");
+  ipAdres.classList.add("ip");
+  ipAdres.textContent = `ip: ${data.sorgu}`;
+  cardInfo.appendChild(ipAdres);
+
+  const ulke = document.createElement("p");
+  ulke.classList.add("ulke");
+  ulke.textContent = `Ülke: ${data["ülkeKodu"]}`;
+  cardInfo.appendChild(ulke);
+
+  const coordinates = document.createElement("p");
+  coordinates.textContent = `Enlem: ${data.enlem} Boylam: ${data.boylam}`;
+  cardInfo.appendChild(coordinates);
+
+  const sehir = document.createElement("p");
+  sehir.textContent = `Şehir: ${data["şehir"]}`;
+  cardInfo.appendChild(sehir);
+
+  const timeZone = document.createElement("p");
+  timeZone.textContent = `Saat dilimi: ${data.saatdilimi}`;
+  cardInfo.appendChild(timeZone);
+
+  const para = document.createElement("p");
+  para.textContent = `Para birimi: ${data.parabirimi}`;
+  cardInfo.appendChild(para);
+
+  const isp = document.createElement("p");
+  isp.textContent = `ISP: ${data.isp}`;
+  cardInfo.appendChild(isp);
+
+  card.append(cardInfo);
+
+  const mainCard = document.querySelector(".cards");
+  mainCard.append(card);
+
+  return mainCard;
+};
+
+function getIpLocationData(ip) {
+  axios
+    .get("https://apis.ergineer.com/ipgeoapi/" + ip)
+    .then(function (response) {
+      // handle success
+      console.log("getIpLocationData", response);
+      cardCreator(response.data);
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .finally(function () {
+      // always executed
+    });
+}
+
+async function runApp() {
+  console.log("runApp çalıştı");
+  console.log("benimIP 1", benimIP);
+  await ipAdresimiAl();
+  console.log("benimIP 2", benimIP);
+  getIpLocationData(benimIP);
+}
+
+runApp();
+
+// ipAdresimiAl().then(() => {
+//   axios
+//     .get(`https://apis.ergineer.com/ipgeoapi/${benimIP}`)
+//     .then((res) => {
+//       getIpLocationData(benimIP);
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
+
+// axios.get("https://apis.ergineer.com/ipgeoapi/176.233.212.155").then((res) => {
+//   console.log(res.data);
+//   cardCreator(res.data);
+// });
